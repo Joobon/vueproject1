@@ -24,3 +24,11 @@ export const getUserInfo = (id) => {
     url: `/user/${id}`
   })
 }
+
+export const editUser = (id, data) => {
+  return axios({
+    url: `/user_update/${id}`,
+    method: 'post',
+    data
+  })
+}
