@@ -8,32 +8,63 @@
         <span class="iconfont iconnew"></span>
       </div>
       <div class="inputs">
-        <input data-v-744880be placeholder="请输入手机号" class="input" />
-        <input data-v-744880be placeholder="密码" class="input" type="password" />
+        <myinput type='text'
+        placeholder="请输入同户名/手机号码"
+        v-model="user.username"
+        :rules='/^1\d{10}$/'
+        msg_err='手机号输入不合法，请输入11位手机号'></myinput>
+        <!-- <myinput type='text' placeholder="请输入同户名/手机号码" :value="user.username" @input="shou"></myinput> -->
+        <myinput type='password' placeholder="请输入密码" v-model="user.password"></myinput>
       </div>
       <p class="tips">
         没有账号？
         <a href="#/register" class>去注册</a>
       </p>
-      <mybtn text="登录" @click="handerbtn"></mybtn>
+      <mybtn text="登录" @click="login"></mybtn>
     </div>
   </div>
 </template>
 
 <script>
 import mybtn from '@/components/mybtn'
+import myinput from '@/components/myinput'
+// 引入登录api方法
+import { userLogin } from '@/api/user.js'
+
 export default {
   data () {
     return {
-
+      user: {
+        username: '10086',
+        password: '123'
+      }
     }
   },
   components: {
-    mybtn
+    mybtn,
+    myinput
   },
   methods: {
-    handerbtn (data) {
-      console.log(data)
+    login (event) {
+      userLogin(this.user)
+        .then(res => {
+          console.log(res)
+          if (res.data.message === '登录成功') {
+            // 将当前的token存储，本地存储
+            localStorage.setItem('heima_40_token', res.data.data.token)
+            // 页面跳转
+            this.$router.push({ path: `/personal/${res.data.data.user.id}` })
+          } else {
+            this.$toast.fail(res.data.message)
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$toast.fail('登陆失败，请重试')
+        })
+    },
+    shou (data) {
+      this.user.username = data
     }
   }
 }

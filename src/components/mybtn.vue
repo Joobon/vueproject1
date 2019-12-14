@@ -1,10 +1,10 @@
 <template>
-  <div class="btn" @click="handerbtn">{{text}}</div>
+  <div class="btn" @click="handerbtn" :class="{success:type==='success'}">{{text}}</div>
 </template>
 
 <script>
 export default {
-  props: ['text'],
+  props: ['text', 'type'],
   methods: {
     handerbtn (event) {
       this.$emit('click', event)
@@ -22,5 +22,8 @@ export default {
     border-radius:25*100vw/360;
     text-align: center;
     font-size: 20*100vw/360
+}
+.success{
+  background: skyblue;
 }
 </style>
