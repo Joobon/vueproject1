@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  props: ['title', 'dis'],
+  props: ['title', 'dis', 'type'],
   methods: {
     tank () {
       this.$emit('click')

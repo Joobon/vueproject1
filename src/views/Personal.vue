@@ -18,7 +18,7 @@
     <mycell title="我的跟帖" dis="跟帖/回复"></mycell>
     <mycell title="我的收藏" dis="文章/视频"></mycell>
     <mycell title="设置" dis></mycell>
-    <mybtn text="退出登录" type="success"></mybtn>
+    <mybtn text="退出登录" type="success" @click='outl'></mybtn>
   </div>
 </template>
 
@@ -56,7 +56,14 @@ export default {
       .catch(err => {
         console.log(err)
       })
+  },
+  methods: {
+    outl () {
+      localStorage.removeItem('heima_40_token')
+      this.$router.push({ name: 'index' })
+    }
   }
+
 }
 </script>
 

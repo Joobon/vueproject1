@@ -1,15 +1,22 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
+import Index from '@/views/Index.vue'
 import Personal from '@/views/Personal.vue'
 import Editprofile from '@/views/Editprofile.vue'
 Vue.use(VueRouter)
 var router = new VueRouter({
   routes: [
     {
-      name: 'log',
+      name: 'index',
       path: '/',
-      redirect: { name: 'login' }
+      component: Index
+    },
+    {
+      name: 'register',
+      path: '/register',
+      component: Register
     },
     {
       name: 'login',

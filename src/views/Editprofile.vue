@@ -2,14 +2,14 @@
   <div class="edit">
     <topheard topt="编辑个人资料">
       <span slot="left" class="iconfont iconjiantou2 fanhui" @click="fback">返回</span>
-      <span slot="right">退出</span>
+      <span slot="right" @click='outl'>退出</span>
     </topheard>
     <div class="head">
       <img :src="dataobj.head_img" alt />
       <van-uploader :after-read="afterRead" />
     </div>
     <mycell title="昵称" :dis="dataobj.nickname" @click="show=!show"></mycell>
-    <van-dialog v-model="show" title="标题" show-cancel-button @confirm='upNickname'>
+    <van-dialog v-model="show" title="标题" show-cancel-button @confirm="upNickname">
       <van-field
         :value="dataobj.nickname"
         required
@@ -17,32 +17,28 @@
         right-icon="question-o"
         placeholder="请输入用户名"
         @click-right-icon="$toast('question')"
-        ref='nickname'
+        ref="nickname"
       />
     </van-dialog>
-    <mycell title="密码" :dis="dataobj.password" @click="show1=!show1"></mycell>
-    <van-dialog v-model="show1" title="标题" show-cancel-button @confirm='upPassword'>
+    <mycell title="密码" dis="*******" @click="show1=!show1"></mycell>
+    <van-dialog v-model="show1" title="标题" show-cancel-button @confirm="upPassword" :beforeClose='beforeClose'>
       <van-field
-        :value="dataobj.password"
         required
-        label="密码"
-        right-icon="question-o"
+        label="原密码"
+        placeholder="请输入原密码"
+        ref="oldpwd"
+      />
+      <van-field
+        required
+        label="新密码"
         placeholder="请输入新密码"
-        @click-right-icon="$toast('question')"
-        ref='password'
+        ref="newpwd"
       />
     </van-dialog>
-    <mycell title="性别" :dis="dataobj.gender" @click="show2=!show2"></mycell>
-    <van-dialog v-model="show2" title="标题" show-cancel-button @confirm='upGender'>
-      <van-field
-        :value="dataobj.gender"
-        required
-        label="性别"
-        right-icon="question-o"
-        placeholder="请修改"
-        @click-right-icon="$toast('question')"
-        ref='gender'
-      />
+    <mycell title="性别" :dis="dataobj.gender=== 1?'男':'女'" @click="show2=!show2"></mycell>
+    <van-dialog v-model="show2" title="标题" show-cancel-button @confirm="upGender">
+      <!-- Picker 选择器 vant组件 -->
+      <van-picker :columns="columns" @change="onChange" />
     </van-dialog>
   </div>
 </template>
@@ -59,7 +55,9 @@ export default {
       dataobj: {},
       show: false,
       show1: false,
-      show2: false
+      show2: false,
+      columns: ['女', '男'],
+      genderIndex: ''
     }
   },
   components: {
@@ -86,6 +84,12 @@ export default {
     fback () {
       window.history.back()
     },
+    // 退出
+    outl () {
+      localStorage.removeItem('heima_40_token')
+      this.$router.push({ name: 'index' })
+    },
+    // 修改头像
     async afterRead (file) {
       // 此时可以自行将文件上传至服务器
       console.log(file)
@@ -113,6 +117,7 @@ export default {
         this.$toast.fail('文件上传失败，请重试')
       }
     },
+    // 修改昵称
     async upNickname () {
       let nickname = this.$refs.nickname.$refs.input.value
       let res1 = await editUser(this.id, { nickname: nickname })
@@ -125,29 +130,53 @@ export default {
         this.$toast.fail('修改昵称失败')
       }
     },
+    // 修改密码
     async upPassword () {
-      let password = this.$refs.password.$refs.input.value
-      // console.log(this.$refs)
-      let res1 = await editUser(this.id, { password: password })
-      // console.log(res1)
-      if (res1.data.message === '修改成功') {
-        this.$toast.success('修改密码成功')
-        // 为了即时刷新头像的显示
-        this.dataobj.password = password
+      let oldpwd = this.$refs.oldpwd.$refs.input.value
+      if (this.dataobj.password === oldpwd) {
+        let newpwd = this.$refs.newpwd.$refs.input.value
+        if (!/\w{3,16}/.test(newpwd)) {
+          this.$toast.fail('请输入3-16位的密码格式')
+          return
+        }
+        let res1 = await editUser(this.id, { password: newpwd })
+        if (res1.data.message === '修改成功') {
+          this.$toast.success('修改密码成功')
+          // localStorage.removeItem('baseurl')
+          localStorage.removeItem('heima_40_token')
+          this.$router.push({ name: 'login' })
+        }
       } else {
-        this.$toast.fail('修改密码失败')
+        this.$toast.fail('原密码输入错误')
       }
     },
+    // 修改性别
     async upGender () {
-      let gender = this.$refs.gender.$refs.input.value
-      let res1 = await editUser(this.id, { gender: gender })
-      console.log(res1)
+      let res1 = await editUser(this.id, { gender: this.genderIndex })
+      // console.log(res1)
       if (res1.data.message === '修改成功') {
         this.$toast.success('修改性别成功')
         // 为了即时刷新头像的显示
-        this.dataobj.gender = gender
+        this.dataobj.gender = this.genderIndex
       } else {
         this.$toast.fail('修改性别失败')
+      }
+    },
+    onChange (picker, value, index) {
+      // this.$toast(`当前值：${value}, 当前索引：${index}`)
+      this.genderIndex = index
+    },
+    beforeClose (action, done) {
+      let oldpwd = this.$refs.oldpwd.$refs.input.value
+      let newpwd = this.$refs.newpwd.$refs.input.value
+      if (action === 'confirm' && this.dataobj.password !== oldpwd) {
+        this.$toast.fail('原密码不正确')
+        done(false)
+      } else if (action === 'confirm' && !/\w{3,16}/.test(newpwd)) {
+        this.$toast.fail('请输入3-16位的密码格式')
+        done(false)
+      } else {
+        done()
       }
     }
   }
