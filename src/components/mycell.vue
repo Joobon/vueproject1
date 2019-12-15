@@ -1,5 +1,5 @@
 <template>
-  <div class="cell">
+  <div class="cell" @click="tank">
       <span class="left">{{title}}</span>
       <div>
       <span class="right">{{dis}}</span>
@@ -10,7 +10,12 @@
 
 <script>
 export default {
-  props: ['title', 'dis']
+  props: ['title', 'dis'],
+  methods: {
+    tank () {
+      this.$emit('click')
+    }
+  }
 }
 </script>
 
