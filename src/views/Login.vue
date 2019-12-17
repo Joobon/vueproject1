@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="container">
-      <div class="close">
+      <div class="close" @click="come">
         <span class="iconfont iconicon-test"></span>
       </div>
       <div class="logo">
@@ -65,6 +65,9 @@ export default {
     },
     shou (data) {
       this.user.username = data
+    },
+    come () {
+      this.$router.push({ name: 'index' })
     }
   }
 }

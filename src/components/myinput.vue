@@ -38,7 +38,7 @@ export default {
     handlerblur (event) {
       if (this.rules && !this.rules.test(event.target.value)) {
         // 给出提示
-        // console.log(this.msg_err)
+        console.log(event)
         this.$toast.fail(this.msg_err)
       }
     }
