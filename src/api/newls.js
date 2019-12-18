@@ -16,3 +16,15 @@ export const getNewsMain = (id) => {
     url: `/post/${id}`
   })
 }
+// 点赞文章
+export const zanNews = (id) => {
+  return axios({
+    url: `/post_like/${id}`
+  })
+}
+// 收藏文章
+export const saveNew = (id) => {
+  return axios({
+    url: `/post_star/${id}`
+  })
+}

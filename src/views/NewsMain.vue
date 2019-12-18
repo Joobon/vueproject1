@@ -17,8 +17,8 @@
       <div class="content" v-html="newsmain.content"  v-if="newsmain.type===1"></div>
       <video v-if='newsmain.type===2' :src='newsmain.content' controls></video>
       <div class="opt">
-        <span class="like">
-          <van-icon name="good-job-o" />点迁
+        <span class="like" :class="{success:newsmain.has_like}">
+          <van-icon name="good-job-o" @click="zan"  />{{newsmain.like_length}}
         </span>
         <span class="chat">
           <van-icon name="chat" class="w" />微信
@@ -41,14 +41,20 @@
       </div>
       <div class="more">更多跟帖</div>
     </div>
+    <newsfoot :newsmain="newsmain"></newsfoot>
   </div>
+
 </template>
 
 <script>
 
-import { getNewsMain } from '@/api/newls.js'
+import { getNewsMain, zanNews } from '@/api/newls.js'
 import { followUser, unFollowUser } from '@/api/user.js'
+import newsfoot from '../components/newsfoot.vue'
 export default {
+  components: {
+    newsfoot
+  },
   data () {
     return {
       newsmain: {}
@@ -56,7 +62,7 @@ export default {
   },
   async mounted () {
     let res = await getNewsMain(this.$route.params.id)
-    console.log(res)
+    // console.log(res)
     if (res.status === 200) {
       this.newsmain = res.data.data
     }
@@ -74,12 +80,26 @@ export default {
       this.$toast.success(res.data.message)
       // 修改元素所绑定的数据,实现页面元素效果的刷新
       this.newsmain.has_follow = !this.newsmain.has_follow
+    },
+    async zan () {
+      let res = await zanNews(this.newsmain.id)
+      console.log(res)
+      if (res.data.message === '点赞成功') {
+        this.newsmain.like_length++
+      } else if (res.data.message === '取消成功') {
+        this.newsmain.like_length--
+      }
+      this.$toast.success(res.data.message)
+      this.newsmain.has_like = !this.newsmain.has_like
     }
   }
 }
 </script>
 
 <style lang='less' scoped>
+.NewsMain{
+  padding-bottom: 50px
+}
 .header {
   padding: 0px 10px;
   height: 50px;
@@ -133,6 +153,9 @@ export default {
 .opt {
   display: flex;
   justify-content: space-around;
+  .success{
+      color: red;
+    };
   .like,
   .chat {
     height: 25px;
@@ -142,6 +165,7 @@ export default {
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 15px;
+
   }
   .w {
     color: rgb(84, 163, 5);
