@@ -48,14 +48,18 @@ export default {
   },
   methods: {
     async register () {
-      let res = await registerUser(this.user)
-      // console.log(res)
-      // console.log(!/^1\d{10}$/.test(this.user.username))
-      if (/^1\d{10}$/.test(this.user.username) && res.data.message === '注册成功') {
-        this.$toast.success('注册成功，请登录')
-        this.$router.push({ name: 'login' })
+      if (/^1\d{10}$/.test(this.user.username) && this.user.nickname !== '') {
+        let res = await registerUser(this.user)
+        // console.log(res)
+        // console.log(!/^1\d{10}$/.test(this.user.username))
+        if (res.data.message === '注册成功') {
+          this.$toast.success('注册成功，请登录')
+          this.$router.push({ name: 'login' })
+        } else {
+          this.$toast.fail('res.data.message')
+        }
       } else {
-        this.$toast.fail('注册失败，请检查输入是否正确')
+        this.$toast.fail('请检查输入是否正确')
       }
     }
     // shou (data) {

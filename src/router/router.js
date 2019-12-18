@@ -5,6 +5,7 @@ import Register from '@/views/Register.vue'
 import Index from '@/views/Index.vue'
 import Personal from '@/views/Personal.vue'
 import Editprofile from '@/views/Editprofile.vue'
+import NewsMain from '@/views/NewsMain.vue'
 Vue.use(VueRouter)
 var router = new VueRouter({
   routes: [
@@ -17,6 +18,11 @@ var router = new VueRouter({
       name: 'register',
       path: '/register',
       component: Register
+    },
+    {
+      name: 'newsmain',
+      path: '/newsmain/:id',
+      component: NewsMain
     },
     {
       name: 'login',

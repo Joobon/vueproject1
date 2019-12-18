@@ -52,6 +52,7 @@ export default {
           if (res.data.message === '登录成功') {
             // 将当前的token存储，本地存储
             localStorage.setItem('heima_40_token', res.data.data.token)
+            localStorage.setItem('heima_40_id', res.data.data.user.id)
             // 页面跳转
             this.$router.push({ path: `/personal/${res.data.data.user.id}` })
           } else {

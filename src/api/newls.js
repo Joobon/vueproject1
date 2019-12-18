@@ -10,3 +10,9 @@ export const getArticleList = (params) => {
     params
   })
 }
+// 3.文章详情
+export const getNewsMain = (id) => {
+  return axios({
+    url: `/post/${id}`
+  })
+}
