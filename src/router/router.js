@@ -6,6 +6,9 @@ import Index from '@/views/Index.vue'
 import Personal from '@/views/Personal.vue'
 import Editprofile from '@/views/Editprofile.vue'
 import NewsMain from '@/views/NewsMain.vue'
+import Attention from '@/views/Attention.vue'
+import Collect from '@/views/Collect.vue'
+import Comments from '@/views/Comments.vue'
 Vue.use(VueRouter)
 var router = new VueRouter({
   routes: [
@@ -38,6 +41,21 @@ var router = new VueRouter({
       name: 'editprofile',
       path: '/editprofile/:id',
       component: Editprofile
+    },
+    {
+      name: 'attention',
+      path: '/attention',
+      component: Attention
+    },
+    {
+      name: 'Collect',
+      path: '/collect',
+      component: Collect
+    },
+    {
+      name: 'Comments',
+      path: '/comments/:id',
+      component: Comments
     }
   ]
 })

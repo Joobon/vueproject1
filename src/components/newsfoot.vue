@@ -1,84 +1,124 @@
 <template>
   <div class="comment">
-    <div class="addcomment" v-show='!isFocus'>
+    <div class="addcomment" v-show="!isFocus">
       <input type="text" placeholder="写跟帖" @focus="handlerFocus" />
-      <span class="comment">
+      <span v-if="or" class="comment" @click="$router.push({path:`/comments/${newsmain.id}`})">
         <i class="iconfont iconpinglun-"></i>
-        <em>100</em>
+        <em>{{newsmain.comment_length}}</em>
       </span>
       <i class="iconfont iconshoucang" :class="{success:newsmain.has_star}" @click="shoucang"></i>
       <i class="iconfont iconfenxiang"></i>
     </div>
-    <div class="inputcomment" v-show='isFocus'>
-        <textarea  ref='commtext' rows="5" @blur='isFocus = false'></textarea>
-        <div>
-            <span>发送</span><br>
-            <span>取消</span>
-        </div>
+    <div class="inputcomment" v-show="isFocus">
+      <textarea ref="commtext" rows="5" :placeholder="placeholder"></textarea>
+      <div>
+        <span @click="send">发送</span>
+        <br />
+        <span @click="cancle">取消</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { saveNew } from '../api/newls.js'
+import { saveNew, sendComment } from '../api/newls.js'
 export default {
-  props: ['newsmain'],
+  props: ['newsmain', 'tanchuang', 'or'],
   data () {
     return {
-      isFocus: false
+      isFocus: false,
+      placeholder: ''
+    }
+  },
+  watch: {
+    tanchuang () {
+      if (this.tanchuang) {
+        this.isFocus = true
+        // console.log(this.tanchuang.user.nickname)
+        this.placeholder = '@' + this.tanchuang.user.nickname
+        setTimeout(() => {
+          this.$refs.commtext.focus()
+        }, 1)
+      }
     }
   },
   methods: {
     //   获取焦点时触发
     handlerFocus () {
-      this.isFocus = !this.isFocus
+      this.isFocus = true
       setTimeout(() => {
         this.$refs.commtext.focus()
       }, 1)
     },
     async shoucang () {
       let res = await saveNew(this.newsmain.id)
-      console.log(res)
+      // console.log(res)
       this.$toast.success(res.data.message)
       this.newsmain.has_star = !this.newsmain.has_star
+    },
+    cancle () {
+      this.isFocus = false
+      // 下面这句操作有问题，无法在子组件中直接修改props中定义的变量的值
+      // this.replayObj = null
+      // 告诉父组件，需要将数据进行重置
+      this.$emit('resetValue')
+    },
+    async send () {
+      let data = {
+        content: this.$refs.commtext.value
+      }
+      if (this.tanchuang) {
+        data.parent_id = this.tanchuang.id
+      }
+      // console.log(data)
+      let res = await sendComment(this.newsmain.id, data)
+      // console.log(res)
+      if (res.data.message === '评论发布成功') {
+        this.$toast.success(res.data.message)
+        this.$refs.commtext.value = ''
+        this.isFocus = false
+        this.placeholder = ''
+        this.$emit('refresh')
+        this.$emit('resetValue')
+      }
     }
   }
 }
 </script>
 
 <style lang='less' scoped>
-.inputcomment{
+.inputcomment {
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  background-color: #fff;
+  align-items: flex-end;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  textarea {
+    flex: 3;
+    background-color: #eee;
+    border: none;
+    border-radius: 10px;
     padding: 10px;
-    box-sizing: border-box;
-    width: 100%;
-    display: flex;
-    background-color: #fff;
-    align-items: flex-end;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    textarea{
-        flex: 3;
-        background-color: #eee;
-        border:none;
-        border-radius: 10px;
-        padding: 10px;
-    }
-    div{
-        padding: 20px;
-    }
-    span {
-        display: block;
-        flex: 1;
-        height: 24px;
-        line-height: 24px;
-        padding: 0 10px;
-        background-color: #f00;
-        color:#fff;
-        text-align: center;
-        border-radius: 6px;
-        font-size: 13px;
-    }
+  }
+  div {
+    padding: 20px;
+  }
+  span {
+    display: block;
+    flex: 1;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 10px;
+    background-color: #f00;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 13px;
+  }
 }
 .addcomment {
   width: 100%;
@@ -122,7 +162,7 @@ export default {
     flex: 1;
   }
 }
-.success{
- color: red;
+.success {
+  color: red;
 }
 </style>

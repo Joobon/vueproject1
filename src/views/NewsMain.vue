@@ -41,7 +41,7 @@
       </div>
       <div class="more">更多跟帖</div>
     </div>
-    <newsfoot :newsmain="newsmain"></newsfoot>
+    <newsfoot :newsmain="newsmain" :or='or'></newsfoot>
   </div>
 
 </template>
@@ -57,7 +57,8 @@ export default {
   },
   data () {
     return {
-      newsmain: {}
+      newsmain: {},
+      or: true
     }
   },
   async mounted () {
@@ -65,6 +66,7 @@ export default {
     // console.log(res)
     if (res.status === 200) {
       this.newsmain = res.data.data
+      // console.log(this.newsmain)
     }
   },
   methods: {

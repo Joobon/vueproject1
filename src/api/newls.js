@@ -28,3 +28,17 @@ export const saveNew = (id) => {
     url: `/post_star/${id}`
   })
 }
+// 评论列表
+export const getComment = (id) => {
+  return axios({
+    url: `/post_comment/${id}`
+  })
+}
+// 发布评论
+export const sendComment = (id, data) => {
+  return axios({
+    method: 'post',
+    url: `/post_comment/${id}`,
+    data
+  })
+}

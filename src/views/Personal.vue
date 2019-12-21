@@ -1,5 +1,8 @@
 <template>
   <div class="personal">
+    <topheard topt="个人中心">
+      <span slot="left" class="iconfont iconjiantou2 fanhui" @click="$router.push({name: 'index'})">首页</span>
+    </topheard>
     <router-link :to="'/editprofile/'+dataobj.id">
       <div class="profile">
         <!-- $axios.defaults.baseURL读取axios的服务器路径 -->
@@ -14,15 +17,16 @@
         <span class="iconfont iconjiantou1"></span>
       </div>
     </router-link>
-    <mycell title="我的关注" dis="关注的用户"></mycell>
+    <mycell title="我的关注" dis="关注的用户" @click="$router.push({name: 'attention'})"></mycell>
     <mycell title="我的跟帖" dis="跟帖/回复"></mycell>
-    <mycell title="我的收藏" dis="文章/视频"></mycell>
+    <mycell title="我的收藏" dis="文章/视频" @click="$router.push({name: 'Collect'})"></mycell>
     <mycell title="设置" dis></mycell>
     <mybtn text="退出登录" type="success" @click='outl'></mybtn>
   </div>
 </template>
 
 <script>
+import topheard from '../components/topheard.vue'
 import { getUserInfo } from '@/api/user.js'
 import mycell from '@/components/mycell.vue'
 import mybtn from '@/components/mybtn'
@@ -34,13 +38,14 @@ export default {
   },
   components: {
     mycell,
-    mybtn
+    mybtn,
+    topheard
   },
   mounted () {
     let id = this.$route.params.id
     getUserInfo(id)
       .then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.data.message === '获取成功') {
           this.dataobj = res.data.data
           // 返回的数据可能没有图片数据，那么我们应该进行判断，如果有图片数据，则设置为当前图片，如果没有图片数据则需要设置为默认图片
